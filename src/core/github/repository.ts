@@ -1,13 +1,25 @@
-import { get } from './request';
+import { get, paginate } from './request';
 
 const OWNER = 'atlastechnol';
+const PER_PAGE = 30;
 
 export async function getPullRequestsNumbers(repositoryName: string) {
-  const data = await get(`/repos/${OWNER}/${repositoryName}/pulls`);
+  let page = 1;
+  let hasMorePages = true;
 
+  let allPulls:Array<any> = [];
   let pulls:Array<any> = [];
 
-  await data.forEach((pull: any) => {
+  while (hasMorePages) {
+    const paginatedRecords = await paginate(`/repos/${OWNER}/${repositoryName}/pulls?per_page=${PER_PAGE}`, page);
+
+    allPulls.push(...paginatedRecords.data);
+    hasMorePages = paginatedRecords.hasMorePages;
+    page++;
+  }
+
+  for(let i = 0; i  < allPulls.length; i++) {
+    const pull = allPulls[i];
     const isOpen = pull.state == 'open';
 
     if (isOpen) {
@@ -19,10 +31,11 @@ export async function getPullRequestsNumbers(repositoryName: string) {
           author: pull.user.login,
           image: pull.user.avatar_url
         },
-        createdAt: pull.created_at
+        createdAt: pull.created_at,
+        consultants: getConsultantsOfTeams(pull.requested_teams) 
       });
     }
-  });
+  }
 
   return pulls;
 }
@@ -33,6 +46,19 @@ export async function getRequestedConsultantReviewsOfPullRequest(repositoryName:
   let consultants:Object[] = [];
 
   await data.teams.forEach((team: any) => {
+    consultants.push({
+      name: team.name,
+      slug: team.slug
+    });
+  });
+
+  return consultants;
+}
+
+function getConsultantsOfTeams(teams: Array<any>) {
+  const consultants:Object[] = [];
+
+  teams.forEach((team: any) => {
     consultants.push({
       name: team.name,
       slug: team.slug

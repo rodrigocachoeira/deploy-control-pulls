@@ -13,11 +13,17 @@ export default async function handler(
   let pullRequestReviewers:Array<any> = [];
   
   for(let i = 0; i < pullRequests.length; i++) {
+    const pullRequest = pullRequests[i];
+
     const approvedReviews = await getApprovedReviewsOfPullRequest(repositoryName as string, pullRequests[i].number);
+    const consultants = pullRequests[i].consultants;
+
+    delete pullRequest.consultants;
 
     pullRequestReviewers.push({
       pullRequest: pullRequests[i],
-      approvedReviews: approvedReviews
+      approvedReviews: approvedReviews,
+      consultants: consultants
     });
   }
 
