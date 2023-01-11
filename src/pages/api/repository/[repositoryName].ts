@@ -1,6 +1,6 @@
-import type { NextApiRequest, NextApiResponse } from 'next'
+import type { NextApiRequest, NextApiResponse } from 'next';
 
-import { getPullRequestsNumbers, getApprovedReviewsOfPullRequest } from '../../../core/github/repository';
+import { getApprovedReviewsOfPullRequest, getPullRequestsNumbers } from '../../../core/github/repository';
 
 export default async function handler(
   req: NextApiRequest,

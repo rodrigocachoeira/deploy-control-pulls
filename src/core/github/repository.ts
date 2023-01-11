@@ -27,6 +27,21 @@ export async function getPullRequestsNumbers(repositoryName: string) {
   return pulls;
 }
 
+export async function getRequestedConsultantReviewsOfPullRequest(repositoryName: string, pullNumber: Number) {
+  const data = await get(`/repos/${OWNER}/${repositoryName}/pulls/${pullNumber}/requested_reviewers`);
+
+  let consultants:Object[] = [];
+
+  await data.teams.forEach((team: any) => {
+    consultants.push({
+      name: team.name,
+      slug: team.slug
+    });
+  });
+
+  return consultants;
+}
+
 export async function getApprovedReviewsOfPullRequest(repositoryName: string, pullNumber: Number) {
   const data = await get(`/repos/${OWNER}/${repositoryName}/pulls/${pullNumber}/reviews`);
 

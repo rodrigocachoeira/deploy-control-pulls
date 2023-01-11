@@ -1,4 +1,4 @@
-import { Octokit } from 'octokit'; 
+import { Octokit } from 'octokit';
 
 export async function get(path: string) {
   const res = await getApi().request(`GET ${path}`);
